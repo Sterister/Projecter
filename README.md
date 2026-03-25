@@ -6,9 +6,11 @@ A terminal-based project navigator with arrow key navigation, scrolling, and dir
 
 ## What it does
 
-Projecter gives you two tools:
+Projecter gives you three tools:
 
 - **`p`** — A quick-launch command that opens an interactive directory browser starting from your projects folder. Navigate with arrow keys, select a folder, and either open a shell or start [Claude Code](https://docs.anthropic.com/en/docs/claude-code) in it. Includes a "repeat last" shortcut for opening multiple terminals in the same project.
+
+- **`s`** — SSH quick-connect menu. Type `s` in any terminal to get an interactive list of your machines (Tailscale, LAN, DNS). Uses `fzf` if installed, falls back to a numbered list. Hosts are configured in `~/.config/ssh-menu/hosts`.
 
 - **SSH greeting menu** — Automatically shows the same navigator when you SSH into your machine. Greets you by name.
 
@@ -56,7 +58,23 @@ $ p
 
 Opens the project navigator. Use arrow keys to browse, Enter to select.
 
-### SSH
+### SSH quick-connect
+
+```
+$ s
+```
+
+Opens an interactive SSH menu. Add your machines to `~/.config/ssh-menu/hosts`:
+
+```
+# Name | User | Address (IP or DNS)
+Desktop | stian | 100.x.x.x
+Server  | root  | myserver.example.com
+```
+
+Uses `fzf` for interactive filtering if installed (`sudo apt install fzf`), otherwise shows a numbered list.
+
+### SSH greeting
 
 The menu appears automatically on first SSH login. No action needed.
 

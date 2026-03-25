@@ -22,6 +22,23 @@ chmod +x "$HOME/.ssh-menu.sh" "$HOME/.project-nav.sh"
 echo -e "  ${GREEN}Installed${RESET} ~/.ssh-menu.sh"
 echo -e "  ${GREEN}Installed${RESET} ~/.project-nav.sh"
 
+# Install ssh-connect (s command)
+INSTALL_DIR="$HOME/.local/bin"
+mkdir -p "$INSTALL_DIR"
+cp "$SCRIPT_DIR/ssh-connect.sh" "$INSTALL_DIR/s"
+chmod +x "$INSTALL_DIR/s"
+echo -e "  ${GREEN}Installed${RESET} $INSTALL_DIR/s"
+
+# Create hosts config if it doesn't exist
+HOSTS_DIR="$HOME/.config/ssh-menu"
+if [ ! -f "$HOSTS_DIR/hosts" ]; then
+    mkdir -p "$HOSTS_DIR"
+    cp "$SCRIPT_DIR/hosts.example" "$HOSTS_DIR/hosts"
+    echo -e "  ${GREEN}Created${RESET} $HOSTS_DIR/hosts (edit this to add your machines)"
+else
+    echo -e "  ${DIM}Hosts config already exists at $HOSTS_DIR/hosts${RESET}"
+fi
+
 # Detect shell config file
 if [ -n "$ZSH_VERSION" ] || [ "$SHELL" = "$(which zsh 2>/dev/null)" ]; then
     RC_FILE="$HOME/.zshrc"
@@ -56,6 +73,7 @@ echo -e "    export PROJECTER_USER=\"YourName\""
 echo ""
 echo -e "  ${BOLD}Usage:${RESET}"
 echo -e "    ${CYAN}p${RESET}        — Open project navigator"
+echo -e "    ${CYAN}s${RESET}        — SSH quick-connect menu"
 echo -e "    ${CYAN}SSH in${RESET}    — Menu appears automatically"
 echo ""
 echo -e "  ${GREEN}Done!${RESET} Restart your shell or run: source ${RC_FILE}"
