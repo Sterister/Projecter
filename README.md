@@ -6,11 +6,13 @@ A terminal-based project navigator with arrow key navigation, scrolling, and dir
 
 ## What it does
 
-Projecter gives you three tools:
+Projecter gives you four tools:
 
 - **`p`** — A quick-launch command that opens an interactive directory browser starting from your projects folder. Navigate with arrow keys, select a folder, and either open a shell or start [Claude Code](https://docs.anthropic.com/en/docs/claude-code) in it. Includes a "repeat last" shortcut for opening multiple terminals in the same project.
 
 - **`s`** — SSH quick-connect menu. Type `s` in any terminal to get an interactive list of your machines (Tailscale, LAN, DNS). Uses `fzf` if installed, falls back to a numbered list. Hosts are configured in `~/.config/ssh-menu/hosts`.
+
+- **`c`** — Launch [Claude Code](https://docs.anthropic.com/en/docs/claude-code) with `--dangerously-skip-permissions` in one keystroke. Passes through any extra arguments.
 
 - **SSH greeting menu** — Automatically shows the same navigator when you SSH into your machine. Greets you by name.
 
@@ -73,6 +75,14 @@ Server  | root  | myserver.example.com
 ```
 
 Uses `fzf` for interactive filtering if installed (`sudo apt install fzf`), otherwise shows a numbered list.
+
+### Claude Code quick-launch
+
+```
+$ c
+```
+
+Starts Claude Code with `--dangerously-skip-permissions`. Supports extra args, e.g. `c --model sonnet`.
 
 ### SSH greeting
 
