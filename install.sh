@@ -14,17 +14,27 @@ echo ""
 # Detect script directory
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-# Copy scripts
-cp "$SCRIPT_DIR/ssh-menu.sh" "$HOME/.ssh-menu.sh"
-cp "$SCRIPT_DIR/project-nav.sh" "$HOME/.project-nav.sh"
-chmod +x "$HOME/.ssh-menu.sh" "$HOME/.project-nav.sh"
-
-echo -e "  ${GREEN}Installed${RESET} ~/.ssh-menu.sh"
-echo -e "  ${GREEN}Installed${RESET} ~/.project-nav.sh"
-
-# Install ssh-connect (s command)
 INSTALL_DIR="$HOME/.local/bin"
 mkdir -p "$INSTALL_DIR"
+
+# Build & install the project navigator (Rust TUI)
+if ! command -v cargo >/dev/null 2>&1; then
+    echo "  cargo not found — install Rust from https://rustup.rs first." >&2
+    exit 1
+fi
+echo -e "  ${DIM}Building projecter (release)…${RESET}"
+cargo build --release --manifest-path "$SCRIPT_DIR/Cargo.toml"
+cp "$(cargo metadata --no-deps --format-version 1 --manifest-path "$SCRIPT_DIR/Cargo.toml" \
+    | grep -o '"target_directory":"[^"]*"' | cut -d'"' -f4)/release/projecter" "$INSTALL_DIR/projecter"
+chmod +x "$INSTALL_DIR/projecter"
+echo -e "  ${GREEN}Installed${RESET} $INSTALL_DIR/projecter"
+
+# Copy SSH greeting menu
+cp "$SCRIPT_DIR/ssh-menu.sh" "$HOME/.ssh-menu.sh"
+chmod +x "$HOME/.ssh-menu.sh"
+echo -e "  ${GREEN}Installed${RESET} ~/.ssh-menu.sh"
+
+# Install ssh-connect (s command)
 cp "$SCRIPT_DIR/ssh-connect.sh" "$INSTALL_DIR/s"
 cp "$SCRIPT_DIR/claude-quick.sh" "$INSTALL_DIR/c"
 chmod +x "$INSTALL_DIR/s" "$INSTALL_DIR/c"
@@ -49,13 +59,14 @@ else
 fi
 
 # Check if already installed
-if grep -q "project-nav.sh" "$RC_FILE" 2>/dev/null; then
+if grep -q "projecter" "$RC_FILE" 2>/dev/null; then
     echo -e "  ${DIM}Shell config already set up in ${RC_FILE}${RESET}"
 else
     cat >> "$RC_FILE" << 'SHELL_BLOCK'
 
 # Projecter — terminal project navigator
-p() { source ~/.project-nav.sh; }
+# The TUI draws to stderr and emits a shell command (cd / cd && claude) on stdout.
+p() { eval "$(~/.local/bin/projecter)"; }
 if [ -n "$SSH_CONNECTION" ] && [ -z "$SSH_MENU_SHOWN" ]; then
     export SSH_MENU_SHOWN=1
     source ~/.ssh-menu.sh
